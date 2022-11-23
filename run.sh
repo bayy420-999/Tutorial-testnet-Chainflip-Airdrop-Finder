@@ -40,7 +40,7 @@ sleep 2
 sudo mkdir /etc/chainflip/keys
 
 read -p "Enter ethereum private keys (without 0x): " ETH_PRIVATE_KEY
-echo "$ETH_PRIVATE_KEY" >> /etc/chainflip/keys/ethereum_key_file
+echo -n "$ETH_PRIVATE_KEY" >> /etc/chainflip/keys/ethereum_key_file
 
 echo -e "\n==========SETUP SIGNIN KEY==========\n"
 sleep 2
