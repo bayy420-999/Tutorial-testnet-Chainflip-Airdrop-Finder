@@ -101,23 +101,23 @@ Terdapat dua cara untuk setup node Chainflip yaitu setup secara otomatis dan set
 
 * Unduh script
 
-```console
-wget https://raw.githubusercontent.com/bayy420-999/Tutorial-testnet-Chainflip-Airdrop-Finder/main/run.sh
-```
+  ```console
+  wget https://raw.githubusercontent.com/bayy420-999/Tutorial-testnet-Chainflip-Airdrop-Finder/main/run.sh
+  ```
 
 * Ubah permission menjadi executable
 
-```console
-chmod +x run.sh
-```
+  ```console
+  chmod +x run.sh
+  ```
 
 * Jalankan script
 
-```console
-./run.sh
-```
+  ```console
+  ./run.sh
+  ```
 
-Lalu isi informasi yang diperlukan
+  Lalu isi informasi yang diperlukan
 
 ### Setup manual
 
