@@ -123,176 +123,177 @@ Terdapat dua cara untuk setup node Chainflip yaitu setup secara otomatis dan set
 
 * Tambahkan repositori Chainflip
 
-```console
-sudo mkdir -p /etc/apt/keyrings
-curl -fsSL repo.chainflip.io/keys/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/chainflip.gpg
-```
+  ```console
+  sudo mkdir -p /etc/apt/keyrings
+  curl -fsSL repo.chainflip.io/keys/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/chainflip.gpg
+  ```
 
 * Verifikasi Chainflip GPG Key
 
-```console
-gpg --show-keys /etc/apt/keyrings/chainflip.gpg
-```
+  ```console
+  gpg --show-keys /etc/apt/keyrings/chainflip.gpg
+  ```
 
-Pastikan anda melihat output seperti ini
+  Pastikan anda melihat output seperti ini
 
-```console
-pub   rsa3072 2022-11-08 [SC] [expires: 2024-11-07]
-      BDBC3CF58F623694CD9E3F5CFB3E88547C6B47C6
-uid                      Chainflip Labs GmbH <dev@chainflip.io>
-sub   rsa3072 2022-11-08 [E] [expires: 2024-11-07]
-```
+  ```console
+  pub   rsa3072 2022-11-08 [SC] [expires: 2024-11-07]
+        BDBC3CF58F623694CD9E3F5CFB3E88547C6B47C6
+  uid                      Chainflip Labs GmbH <dev@chainflip.io>
+  sub   rsa3072 2022-11-08 [E] [expires: 2024-11-07]
+  ```
 
 * Tambahkan repositori Chainflip ke daftar sumber
 
-```console
-echo "deb [signed-by=/etc/apt/keyrings/chainflip.gpg] https://repo.chainflip.io/perseverance/ focal main" | sudo tee /etc/apt/sources.list.d/chainflip.list
-```
+  ```console
+  echo "deb [signed-by=/etc/apt/keyrings/chainflip.gpg] https://repo.chainflip.io/perseverance/ focal main" | sudo tee /etc/apt/sources.list.d/chainflip.list
+  ```
 
 * Pasang paket Chainflip
 
-```console
-sudo apt-get update
-sudo apt-get install -y chainflip-cli chainflip-node chainflip-engine
-```
+  ```console
+  sudo apt-get update
+  sudo apt-get install -y chainflip-cli chainflip-node chainflip-engine
+  ```
 
 * Impor dompet ETH
 
-```console
-echo -n "YOUR_VALIDATOR_WALLET_PRIVATE_KEY" |  sudo tee /etc/chainflip/keys/ethereum_key_file
-```
+  ```console
+  echo -n "YOUR_VALIDATOR_WALLET_PRIVATE_KEY" |  sudo tee /etc/chainflip/keys/ethereum_key_file
+  ```
 
-> Ganti `YOUR_VALIDATOR_WALLET_PRIVATE_KEY` dengan private key anda
-> Jika ada `0x` di private key anda, maka hapus `0x`
+  > Ganti `YOUR_VALIDATOR_WALLET_PRIVATE_KEY` dengan private key anda
+  > Jika ada `0x` di private key anda, maka hapus `0x`
 
 * Buat Signing Keys
 
-```console
-chainflip-node key generate >> sign_key.txt
-```
+  ```console
+  chainflip-node key generate >> sign_key.txt
+  ```
 
-Cek apakah Signing Keys sudah tersimpan
+  Cek apakah Signing Keys sudah tersimpan
 
-```console
-cat sign_key.txt
-```
+  ```console
+  cat sign_key.txt
+  ```
 
 * Setting Secret Seed
 
-Jalankan perintah berikut dan masukan Secret Seed anda
+  Jalankan perintah berikut dan masukan Secret Seed anda
 
-```console
-SECRET_SEED=<MASUKAN_SECRET_SEED_TADI>
-```
-Lalu jalankan perintah
+  ```console
+  SECRET_SEED=<MASUKAN_SECRET_SEED_TADI>
+  ```
 
-```console
-echo -n "${SECRET_SEED:2}" | sudo tee /etc/chainflip/keys/signing_key_file
-```
+  Lalu jalankan perintah
+
+  ```console
+  echo -n "${SECRET_SEED:2}" | sudo tee /etc/chainflip/keys/signing_key_file
+  ```
 
 * Buat Node Key
 
-```console
-sudo chainflip-node key generate-node-key --file /etc/chainflip/keys/node_key_file
-```
+  ```console
+  sudo chainflip-node key generate-node-key --file /etc/chainflip/keys/node_key_file
+  ```
 
-Lalu cek Node Key anda
+  Lalu cek Node Key anda
 
-```console
-cat /etc/chainflip/keys/node_key_file
-```
+  ```console
+  cat /etc/chainflip/keys/node_key_file
+  ```
 
 * Buat file konfigurasi
 
-```console
-sudo mkdir -p /etc/chainflip/config
-sudo nano /etc/chainflip/config/Default.toml
-```
+  ```console
+  sudo mkdir -p /etc/chainflip/config
+  sudo nano /etc/chainflip/config/Default.toml
+  ```
 
-Salin text dibawah:
+  Salin text dibawah:
 
-```console
-# Default configurations for the CFE
-[node_p2p]
-node_key_file = "/etc/chainflip/keys/node_key_file"
-ip_address="IP_ADDRESS_OF_YOUR_NODE"
-port = "8078"
+  ```console
+  # Default configurations for the CFE
+  [node_p2p]
+  node_key_file = "/etc/chainflip/keys/node_key_file"
+  ip_address="IP_ADDRESS_OF_YOUR_NODE"
+  port = "8078"
+  
+  [state_chain]
+  ws_endpoint = "ws://127.0.0.1:9944"
+  signing_key_file = "/etc/chainflip/keys/signing_key_file"
+  
+  [eth]
+  # Ethereum RPC endpoints (websocket and http for redundancy).
+  ws_node_endpoint = "WSS_ENDPOINT_FROM_ETHEREUM_CLIENT"
+  http_node_endpoint = "HTTPS_ENDPOINT_FROM_ETHEREUM_CLIENT"
+  
+  # Ethereum private key file path. This file should contain a hex-encoded private key.
+  private_key_file = "/etc/chainflip/keys/ethereum_key_file"
 
-[state_chain]
-ws_endpoint = "ws://127.0.0.1:9944"
-signing_key_file = "/etc/chainflip/keys/signing_key_file"
+  [signing]
+  db_file = "/etc/chainflip/data.db"
+  ```
 
-[eth]
-# Ethereum RPC endpoints (websocket and http for redundancy).
-ws_node_endpoint = "WSS_ENDPOINT_FROM_ETHEREUM_CLIENT"
-http_node_endpoint = "HTTPS_ENDPOINT_FROM_ETHEREUM_CLIENT"
+  Ganti variabel berikut
 
-# Ethereum private key file path. This file should contain a hex-encoded private key.
-private_key_file = "/etc/chainflip/keys/ethereum_key_file"
+  | Variabel | Keterangan |
+  |----------|------------|
+  |ip_address|Ganti dengan IP Address VPS anda (yang dipake login VPS)|
+  |ws_node_endpoint|Ganti dengan Websicket node endpoint anda (yang tadi bikin)|
+  |http_node_endpoint|Ganti dengan HTTP node endpoint anda (yang tadi bikin)|
 
-[signing]
-db_file = "/etc/chainflip/data.db"
-```
+  Lalu pencet <kbd>CTRL</kbd>+<kbd>x</kbd>+<kbd>y</kbd> untuk menyimpan file
 
-Ganti variabel berikut
-
-| Variabel | Keterangan |
-|----------|------------|
-|ip_address|Ganti dengan IP Address VPS anda (yang dipake login VPS)|
-|ws_node_endpoint|Ganti dengan Websicket node endpoint anda (yang tadi bikin)|
-|http_node_endpoint|Ganti dengan HTTP node endpoint anda (yang tadi bikin)|
-
-Lalu pencet <kbd>CTRL</kbd>+<kbd>x</kbd>+<kbd>y</kbd> untuk menyimpan file
-
-Setup manual selesai, anda dapat melanjutkan langkah berikutnya untuk menjalankan node
+  Setup manual selesai, anda dapat melanjutkan langkah berikutnya untuk menjalankan node
 
 ## Jalankan node
 
 * Jalankan node
 
-```console
-sudo systemctl start chainflip-node
-```
+  ```console
+  sudo systemctl start chainflip-node
+  ```
 
 * Cek status node
 
-```console
-sudo systemctl status chainflip-node
-```
+  ```console
+  sudo systemctl status chainflip-node
+  ```
 
 * Cek log
 
-```console
-tail -f /var/log/chainflip-node.log
-```
+  ```console
+  tail -f /var/log/chainflip-node.log
+  ```
 
-> Jika log sudah seperti ini `💤 Idle (15 peers), best: #3578 (0xcf9a…d842), finalized #3576 (0x6a0e…03fe), ⬇ 27.0kiB/s ⬆ 25.5kiB/s 
-✨ Imported #3579 (0xa931…c03e)`  anda  dapat melanjutkan langkah selanjutnya
+  > Jika log sudah seperti ini `💤 Idle (15 peers), best: #3578 (0xcf9a…d842), finalized #3576 (0x6a0e…03fe), ⬇ 27.0kiB/s ⬆ 25.5kiB/s 
+  ✨ Imported #3579 (0xa931…c03e)` anda dapat melanjutkan langkah selanjutnya
 
 * Jalankan chainflip-engine
 
-```console
-sudo systemctl start chainflip-engine
-```
+  ```console
+  sudo systemctl start chainflip-engine
+  ```
 
 * Cek status chainflip-engine
 
-```console
-sudo systemctl status chainflip-engine
-```
+  ```console
+  sudo systemctl status chainflip-engine
+  ```
 
 * Mulai ulang chainflip-node & chainflip-engine
 
-```console
-sudo systemctl enable chainflip-node
-sudo systemctl enable chainflip-engine
-```
+  ```console
+  sudo systemctl enable chainflip-node
+  sudo systemctl enable chainflip-engine
+  ```
 
 * Cek log chainflip-engine
 
-```console
-tail -f /var/log/chainflip-engine.log
-```
+  ```console
+  tail -f /var/log/chainflip-engine.log
+  ```
 
 ## Stake
 
@@ -380,57 +381,57 @@ sudo chainflip-cli \
 
 * Menjalankan service chainflip-node
 
-```console
-sudo systemctl start chainflip-node
-```
+  ```console
+  sudo systemctl start chainflip-node
+  ```
 
 * Menjalankan service chainflip-engine
 
-```console
-sudo systemctl start chainflip-engine
-```
+  ```console
+  sudo systemctl start chainflip-engine
+  ```
 
 ### Memulai ulang service
 
 * Memulai ulang service chainflip-node
 
-```console
-sudo systemctl restart chainflip-node
-```
+  ```console
+  sudo systemctl restart chainflip-node
+  ```
 
 * Memulai ulang service chainflip-engine
 
-```console
-sudo systemctl restart chainflip-engine
-```
+  ```console
+  sudo systemctl restart chainflip-engine
+  ```
 
 ### Menghentikan service
 
 * Menghentikan service chainflip-node
 
-```console
-sudo systemctl stop chainflip-node
-```
+  ```console
+  sudo systemctl stop chainflip-node
+  ```
 
 * Menghentikan service chainflip-engine
 
-```console
-sudo systemctl stop chainflip-engine
-```
+  ```console
+  sudo systemctl stop chainflip-engine
+  ```
 
 ### Cek log
 
 * Cek log chainflip-node
 
-```console
-tail -f /var/log/chainflip-node.log
-```
+  ```console
+  tail -f /var/log/chainflip-node.log
+  ```
 
 * Cek log chainflip-engine
 
-```console
-tail -f /var/log/chainflip-engine.log
-```
+  ```console
+  tail -f /var/log/chainflip-engine.log
+  ```
 
 ## Troubleshoot
 
