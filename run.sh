@@ -49,7 +49,7 @@ chainflip-node key generate >> sign_key.txt
 cat sign_key.txt
 
 SECRET_SEED=$(grep "Secret seed" sign_key.txt)
-echo "${SECRET_SEED:23}" >> /etc/chainflip/keys/signing_key_file
+echo -n "${SECRET_SEED:23}" >> /etc/chainflip/keys/signing_key_file
 
 
 echo -e "==========GENERATING NODE KEY==========\n"
