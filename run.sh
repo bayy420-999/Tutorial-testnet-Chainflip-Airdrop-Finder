@@ -40,7 +40,7 @@ sleep 2
 sudo mkdir /etc/chainflip/keys
 
 read -p "Enter ethereum private keys (without 0x): " ETH_PRIVATE_KEY
-echo -n "$ETH_PRIVATE_KEY" |  sudo tee /etc/chainflip/keys/ethereum_key_file
+echo "$ETH_PRIVATE_KEY" >> /etc/chainflip/keys/ethereum_key_file
 
 echo -e "\n==========SETUP SIGNIN KEY==========\n"
 sleep 2
@@ -49,7 +49,7 @@ chainflip-node key generate >> sign_key.txt
 cat sign_key.txt
 
 SECRET_SEED=$(grep "Secret seed" sign_key.txt)
-echo -n "${SECRET_SEED:23}" | sudo tee /etc/chainflip/keys/signing_key_file
+echo "${SECRET_SEED:23}" >> /etc/chainflip/keys/signing_key_file
 
 
 echo -e "==========GENERATING NODE KEY==========\n"
