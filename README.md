@@ -159,7 +159,7 @@ Terdapat dua cara untuk setup node Chainflip yaitu setup secara otomatis dan set
 * Impor dompet ETH
 
   ```console
-  echo -n "YOUR_VALIDATOR_WALLET_PRIVATE_KEY" |  sudo tee /etc/chainflip/keys/ethereum_key_file
+  echo -n "YOUR_VALIDATOR_WALLET_PRIVATE_KEY" >> /etc/chainflip/keys/ethereum_key_file
   ```
 
   > Ganti `YOUR_VALIDATOR_WALLET_PRIVATE_KEY` dengan private key anda
