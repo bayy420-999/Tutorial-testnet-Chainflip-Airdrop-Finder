@@ -25,7 +25,7 @@ sleep 2
 
 gpg --show-keys /etc/apt/keyrings/chainflip.gpg
 
-echo "deb [signed-by=/etc/apt/keyrings/chainflip.gpg] https://repo.chainflip.io/perseverance/ focal main" | sudo tee /etc/apt/sources.list.d/chainflip.list
+echo "deb [signed-by=/etc/apt/keyrings/chainflip.gpg] https://repo.chainflip.io/perseverance/ focal main" >> /etc/apt/sources.list.d/chainflip.list
 
 
 echo -e "\n==========INSTALLING CHAINFLIP PACKAGE==========\n"
@@ -39,18 +39,32 @@ sleep 2
 
 sudo mkdir /etc/chainflip/keys
 
+if [[ -f /etc/chainflip/keys/ethereum_key_file ]]; then
+    rm /etc/chainflip/keys/ethereum_key_file
+fi
+
 read -p "Enter ethereum private keys (without 0x): " ETH_PRIVATE_KEY
 echo -n "$ETH_PRIVATE_KEY" >> /etc/chainflip/keys/ethereum_key_file
 
 echo -e "\n==========SETUP SIGNIN KEY==========\n"
 sleep 2
 
+if [[ -s sign_key.txt ]]; then
+    rm sign_key.txt
+fi
+
 chainflip-node key generate >> sign_key.txt
-cat sign_key.txt
+
+
+SIGNING_KEY=$(cat sign_key.txt)
+echo -e "\n$SIGNING_KEY\n"
+
+if [[ -s /etc/chainflip/keys/signing_key_file ]]; then
+    rm /etc/chainflip/keys/signing_key_file
+fi
 
 SECRET_SEED=$(grep "Secret seed" sign_key.txt)
 echo -n "${SECRET_SEED:23}" >> /etc/chainflip/keys/signing_key_file
-
 
 echo -e "==========GENERATING NODE KEY==========\n"
 sleep 2
@@ -59,6 +73,10 @@ sudo chainflip-node key generate-node-key --file /etc/chainflip/keys/node_key_fi
 
 echo -e "==========GENERATING Default.toml==========\n"
 sleep 2
+
+if [[ -s /etc/chainflip/config/Default.toml ]]; then
+    rm /etc/chainflip/config/Default.toml
+fi
 
 sudo mkdir -p /etc/chainflip/config
 IP_ADDRESS=$(curl -sw "\n" ifconfig.me)
