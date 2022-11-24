@@ -37,11 +37,11 @@ sudo apt-get install -y chainflip-cli chainflip-node chainflip-engine
 echo -e "\n==========SETUP ETHEREUM KEY==========\n"
 sleep 2
 
-sudo mkdir /etc/chainflip/keys
-
-if [[ -f /etc/chainflip/keys/ethereum_key_file ]]; then
-    rm /etc/chainflip/keys/ethereum_key_file
+if [[ -d /etc/chainflip/keys ]]; then
+    sudo rm -rf /etc/chainflip/keys
 fi
+
+sudo mkdir /etc/chainflip/keys
 
 read -p "Enter ethereum private keys (without 0x): " ETH_PRIVATE_KEY
 echo -n "$ETH_PRIVATE_KEY" >> /etc/chainflip/keys/ethereum_key_file
@@ -57,11 +57,7 @@ chainflip-node key generate >> sign_key.txt
 
 
 SIGNING_KEY=$(cat sign_key.txt)
-echo -e "\n$SIGNING_KEY\n"
-
-if [[ -s /etc/chainflip/keys/signing_key_file ]]; then
-    rm /etc/chainflip/keys/signing_key_file
-fi
+echo -e "$SIGNING_KEY\n"
 
 SECRET_SEED=$(grep "Secret seed" sign_key.txt)
 echo -n "${SECRET_SEED:23}" >> /etc/chainflip/keys/signing_key_file
@@ -71,11 +67,11 @@ sleep 2
 
 sudo chainflip-node key generate-node-key --file /etc/chainflip/keys/node_key_file
 
-echo -e "==========GENERATING Default.toml==========\n"
+echo -e "\n==========GENERATING Default.toml==========\n"
 sleep 2
 
-if [[ -s /etc/chainflip/config/Default.toml ]]; then
-    rm /etc/chainflip/config/Default.toml
+if [[ -d /etc/chainflip/config ]]; then
+    rm -rf /etc/chainflip/config
 fi
 
 sudo mkdir -p /etc/chainflip/config
@@ -83,7 +79,6 @@ IP_ADDRESS=$(curl -sw "\n" ifconfig.me)
 
 read -p "Enter WSS Node endpoint: " WSS_NODE_ENDPOINT
 read -p "Enter HTTP Node endpoint: " HTTP_NODE_ENDPOINT
-
 
 echo '# Default configurations for the CFE
 [node_p2p]
@@ -107,6 +102,8 @@ private_key_file = "/etc/chainflip/keys/ethereum_key_file"
 [signing]
 db_file = "/etc/chainflip/data.db"' >> /etc/chainflip/config/Default.toml
 
-echo "==========SETUP FINISH=========="
+sleep 2
+
+echo -e "\n==========SETUP FINISH==========\n"
 echo -e "To start node run \`sudo systemctl start chainflip-node\`"
 echo -e "To check node status run \`sudo systemctl status chainflip-node\`"
